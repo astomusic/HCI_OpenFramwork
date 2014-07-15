@@ -34,9 +34,9 @@ public:
     //ofPoint mousePoint;
     vector<Circle> circlePosition;
     
-    int circleSize = 10;
-    int red = 0;
-    int green = 200;
-    int blue = 0;
+    int circleSize;
+    int red;
+    int green;
+    int blue;
 		
 };

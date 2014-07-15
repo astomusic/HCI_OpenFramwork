@@ -4,6 +4,11 @@
 void ofApp::setup(){
 	fontMessage.loadFont("vag.ttf",10);
 	ofBackground(255,255,255);
+    
+    circleSize = 10;
+    red = 0;
+    green = 200;
+    blue = 0;
 }
 
 //--------------------------------------------------------------
@@ -99,8 +104,8 @@ void ofApp::mousePressed(int x, int y, int button){
             break;
         case 2:
             sprintf(eventMessage,"removed at (%d,%d)",x,y);
-            int tempX, tempY, temp;
-            int min;
+            double tempX, tempY, temp;
+            double min;
             min = circleSize;
             int nearPosition;
             for(int i=0;i<circlePosition.size();i++) {
