@@ -61,7 +61,7 @@ void Ball::move()
     if (y - diameter/2 < 0) {
         y = diameter/2;
         vy *= friction;
-    }
+    }   
 }
 
 void Ball::display()

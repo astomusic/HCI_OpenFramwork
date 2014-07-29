@@ -35,5 +35,6 @@ public:
     int barHeight = 20;
     
     void checkCollision();
+    void checkCollisionWithBar();
     void checkOutofBall();
 };

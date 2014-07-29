@@ -5,7 +5,7 @@ void ofApp::setup(){
     numBalls = 10;
 	spring = 1;
 	gravity = 0.1;
-	friction = -0.5;
+	friction = -1;
     
 	width = ofGetWidth();
 	height= ofGetHeight();
@@ -30,6 +30,7 @@ void ofApp::update(){
 		balls[i]->move();
 	}
 	checkCollision();
+    checkCollisionWithBar();
     checkOutofBall();
 }
 
@@ -126,6 +127,16 @@ void ofApp::checkCollision(void) {
 				balls[j]->vy += ay;
 			}
 		}
+    }
+}
+
+void ofApp::checkCollisionWithBar(void) {
+    for(int i=0;i<balls.size();i++) {
+        bool x = balls[i]->x > barStartx && balls[i]->x < barStartx+barWidth;
+        if(balls[i]->y + balls[i]->diameter/2 > batStarty && x) {
+            balls[i]->y = batStarty - balls[i]->diameter/2;
+            balls[i]->vy *= friction;
+        };
     }
 }
 
