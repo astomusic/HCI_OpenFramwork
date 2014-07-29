@@ -5,7 +5,7 @@ void ofApp::setup(){
     numBalls = 10;
 	spring = 1;
 	gravity = 0.1;
-	friction = -1;
+	friction = -1.0;
     
 	width = ofGetWidth();
 	height= ofGetHeight();
@@ -49,9 +49,9 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if(key == 356) {
-        barStartx -=10;
+        barStartx -=20;
     } else if (key == 358 ) {
-        barStartx +=10;
+        barStartx +=20;
     }
 }
 
@@ -77,15 +77,6 @@ void ofApp::mousePressed(int x, int y, int button){
         ball->setup(ofRandom(ofGetWidth()), 0, 10, spring, gravity, friction);
         balls.push_back(ball);
     }
-    
-    if(button == 1) {
-        gravity = -0.3;
-    }
-    
-    if(button == 2) {
-        gravity = 0.3;
-    }
-    
 }
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
@@ -133,9 +124,15 @@ void ofApp::checkCollision(void) {
 void ofApp::checkCollisionWithBar(void) {
     for(int i=0;i<balls.size();i++) {
         bool x = balls[i]->x > barStartx && balls[i]->x < barStartx+barWidth;
+        int half = barStartx + barWidth/2;
         if(balls[i]->y + balls[i]->diameter/2 > batStarty && x) {
             balls[i]->y = batStarty - balls[i]->diameter/2;
             balls[i]->vy *= friction;
+            if(half > balls[i]->x) {
+                balls[i]->vx -= 1;
+            } else {
+                balls[i]->vx += 1;
+            }
         };
     }
 }
