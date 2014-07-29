@@ -23,7 +23,7 @@ void Ball::setGravity(float gravityin)
     gravity = gravityin;
 }
 
-void Ball::setup(float xin, float yin, float din, int idin, float springin, float graivityin, float frictionin)
+void Ball::setup(float xin, float yin, float din, float springin, float graivityin, float frictionin)
 {
 	vx = 0;
 	vy = 0;
@@ -31,7 +31,6 @@ void Ball::setup(float xin, float yin, float din, int idin, float springin, floa
 	x = xin;
 	y = yin;
 	diameter = din;
-	id = idin;
 	
 	spring = springin;
 	gravity = graivityin;
@@ -54,10 +53,10 @@ void Ball::move()
         x = diameter/2;
         vx *= friction;
     }
-//    if (y + diameter/2 > height) {
-//        y = height - diameter/2;
-//        vy *= friction;
-//    }
+    //    if (y + diameter/2 > height) {
+    //        y = height - diameter/2;
+    //        vy *= friction;
+    //    }
     if (y - diameter/2 < 0) {
         y = diameter/2;
         vy *= friction;

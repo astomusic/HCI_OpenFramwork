@@ -17,7 +17,7 @@ public:
 	~Ball(void);
     
     void setGravity(float springin);
-	void setup(float xin, float yin, float din, int idin, float springin, float graivityin, float frictionin);
+	void setup(float xin, float yin, float din, float springin, float graivityin, float frictionin);
     
 	void move();
 	void display();
@@ -28,7 +28,6 @@ public:
 	float diameter;
 	float vx;
 	float vy;
-	int id;
     
 	float spring;
 	float gravity;
