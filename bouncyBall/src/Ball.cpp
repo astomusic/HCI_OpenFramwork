@@ -53,10 +53,11 @@ void Ball::move()
         x = diameter/2;
         vx *= friction;
     }
-    //    if (y + diameter/2 > height) {
-    //        y = height - diameter/2;
-    //        vy *= friction;
-    //    }
+    if (y - diameter/2 > height) {
+        status = false;
+//        y = height - diameter/2;
+//        vy *= friction;
+    }
     if (y - diameter/2 < 0) {
         y = diameter/2;
         vy *= friction;

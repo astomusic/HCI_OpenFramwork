@@ -36,4 +36,6 @@ public:
 	float width;
 	float height;
     
+    bool status = true;
+    
 };

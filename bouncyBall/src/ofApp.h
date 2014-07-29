@@ -24,7 +24,7 @@ public:
     float gravity;
     float friction;
     
-    vector<Ball> balls;
+    vector<Ball*> balls;
     
     float width;
     float height;
@@ -35,4 +35,5 @@ public:
     int barHeight = 20;
     
     void checkCollision();
+    void checkOutofBall();
 };
