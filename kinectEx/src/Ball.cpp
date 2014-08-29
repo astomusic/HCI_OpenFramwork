@@ -42,6 +42,12 @@ void Ball::setup(float xin, float yin, float din, float springin, float graivity
 void Ball::move()
 {
 	vy += gravity;
+    if(vx > 10) {
+        vx = 10;
+    }
+    if(vy > 10) {
+        vy = 10;
+    }
     x += vx;
     y += vy;
     if (x + diameter/2 > width) {
@@ -63,7 +69,24 @@ void Ball::move()
     }
 }
 
+void Ball::setColor(int r, int g, int b) {
+    red = r;
+    green = g;
+    blue = b;
+}
+
+int Ball::getRed() {
+    return red;
+}
+int Ball::getGreen() {
+    return green;
+}
+int Ball::getBlue() {
+    return blue;
+}
+
 void Ball::display()
 {
+    ofSetColor(red,green,blue);
 	ofCircle(x, y, diameter/2);
 }

@@ -26,7 +26,7 @@ void testApp::setup() {
     
     openNIDevice.start();
     
-    verdana.loadFont(ofToDataPath("verdana.ttf"), 24);
+    verdana.loadFont(ofToDataPath("verdana.ttf"), 15);
 
 	for (int i = 0; i < MAX_NUMBER_OF_HAND; ++i)
 	{
@@ -39,7 +39,7 @@ void testApp::setup() {
 	ofAddListener(openNIDevice.handEvent, this, &testApp::handEvent);
     
     numBalls = 10;
-	spring = 0.5;
+	spring = 0.1;
 	gravity = 0.1;
 	friction = -1.0;
     
@@ -48,9 +48,19 @@ void testApp::setup() {
     
 	for(int i=0;i<numBalls;i++) {
         Ball *ball = new Ball();
-        ball->setup(ofRandom(ofGetWidth()), 0, 10, spring, gravity, friction);
+        ball->setup(ofRandom(ofGetWidth()), 0, 20, spring, gravity, friction);
+        ball->setColor(0, 0, 0);
         balls.push_back(ball);
 	}
+    
+    for(int i=0;i<MAX_NUMBER_OF_HAND;i++) {
+        Ball* myhand = new Ball();
+
+        myhands.push_back(myhand);
+    }
+
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -60,8 +70,8 @@ void testApp::update(){
 		balls[i]->move();
 	}
     checkCollision();
-    checkCollisionWithBar();
-
+    checkCollisionWithHand();
+    checkCollisionMeetHand();
 }
 
 //--------------------------------------------------------------
@@ -71,12 +81,13 @@ void testApp::draw(){
     ofPushMatrix();
     // draw debug (ie., image, depth, skeleton)
     //openNIDevice.drawDebug();
+    //openNIDevice.drawSkeletons();
 	openNIDevice.drawDepth();
     ofPopMatrix();
     
     ofPushMatrix();
     // get number of current hands
-    int numHands = openNIDevice.getNumTrackedHands();
+    numHands = openNIDevice.getNumTrackedHands();
     
     // iterate through users
     for (int i = 0; i < numHands; i++){
@@ -89,12 +100,14 @@ void testApp::draw(){
         // do something with the positions like:
         
         // draw a rect at the position (don't confuse this with the debug draw which shows circles!!)
-        ofSetColor(255,0,0);
-        barStartx = handPosition.x-(barWidth/2);
-        barStarty = handPosition.y;
-        ofRect(barStartx, barStarty, barWidth, barHeight);
-        
-        
+        if(i%2==0) {
+            myhands[i]->setColor(255, 0, 0);
+        } else {
+            myhands[i]->setColor(0, 255, 0);
+        }
+        myhands[i]->setup(handPosition.x, handPosition.y, 100, spring, gravity, friction);
+
+        myhands[i]->display();
     }
     ofPopMatrix();
 
@@ -104,20 +117,37 @@ void testApp::draw(){
 	}
     
     for(int i=0;i<balls.size();i++) {
-		ofSetColor(200,0,0);
 		
 		balls[i]->display();
 	}
-//    
-//    ofSetColor(255,255,255);
-//    ofRect(100, 100, 100, 100);
+
     
     // draw some info regarding frame counts etc
-	ofSetColor(0, 255, 0);
+	ofSetColor(0, 0, 0);
 	string msg = " MILLIS: " + ofToString(ofGetElapsedTimeMillis()) + " FPS: " + ofToString(ofGetFrameRate()) + " Device FPS: " + ofToString(openNIDevice.getFrameRate());
+	verdana.drawString(msg, 10, openNIDevice.getNumDevices() * 480 - 20);
     
-	verdana.drawString(msg, 20, openNIDevice.getNumDevices() * 480 - 20);
-
+    ofSetColor(255, 0, 0);
+    string redScore = "RED: " + ofToString(countRed());
+    verdana.drawString(redScore, 50, 50);
+    
+    ofSetColor(0, 255, 0);
+    string greenScore = "GREEN: " + ofToString(countGreen());
+    verdana.drawString(greenScore, 500, 50);
+    
+    if(countRed() == 10) {
+        ofSetColor(255, 0, 0);
+        redScore = "RED WIN";
+        verdana.drawString(redScore, 250, 50);
+        openNIDevice.stop();
+    }
+    
+    if(countGreen() == 10) {
+        ofSetColor(0, 255, 0);
+        greenScore = "GREEN WIN";
+        verdana.drawString(greenScore, 250, 50);
+        openNIDevice.stop();
+    }
 }
 
 //--------------------------------------------------------------
@@ -173,6 +203,32 @@ void testApp::windowResized(int w, int h){
 
 }
 
+int testApp::countRed() {
+    int red = 0;
+    int count = 0;
+    for(int i=0;i<balls.size();i++) {
+        red = balls[i]->getRed();
+        if(red == 255) {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+int testApp::countGreen() {
+    int green = 0;
+    int count = 0;
+    for(int i=0;i<balls.size();i++) {
+        green = balls[i]->getGreen();
+        if(green == 255) {
+            count++;
+        }
+    }
+    
+    return count;
+}
+
 void testApp::checkCollision(void) {
 	for(int i=0;i<balls.size();i++) {
 		for(int j=i+1;j<balls.size();j++) {
@@ -196,34 +252,49 @@ void testApp::checkCollision(void) {
     }
 }
 
-void testApp::checkCollisionWithBar(void) {
+void testApp::checkCollisionWithHand(void) {
     for(int i=0;i<balls.size();i++) {
-        bool x = balls[i]->x + balls[i]->diameter/2 > barStartx && balls[i]->x - balls[i]->diameter/2 < barStartx + barWidth;
-        bool y = balls[i]->y + balls[i]->diameter/2 > barStarty && balls[i]->y - balls[i]->diameter/2 < barStarty + barHeight;
-        int half = barStartx + barWidth/2;
-        if(x && y) {
-            if(balls[i]->y < barStarty){
-                balls[i]->y = barStarty - balls[i]->diameter/2;
-                balls[i]->vy *= friction;
-            } else {
-                balls[i]->y = barStarty + barHeight + balls[i]->diameter/2;
-                balls[i]->vy *= friction;
-            }
-            
-            if(half > balls[i]->x) {
-                balls[i]->vx -= 1;
-            } else {
-                balls[i]->vx += 1;
+        for (int j = 0; j < numHands; j++){
+            float dx = myhands[j]->x - balls[i]->x;
+            float dy = myhands[j]->y - balls[i]->y;
+            float distance = ofDist(balls[i]->x,balls[i]->y,myhands[j]->x,myhands[j]->y);
+            float minDist = myhands[j]->diameter/2 + balls[i]->diameter/2;
+        
+            if (distance < minDist) {
+                float angle = atan2(dy,dx);
+                float targetX = balls[i]->x + cos(angle) * minDist;
+                float targetY = balls[i]->y + sin(angle) * minDist;
+                float ax = (targetX - myhands[j]->x) * spring;
+                float ay = (targetY - myhands[j]->y) * spring;
+                balls[i]->vx -= ax;
+                balls[i]->vy -= ay;
+                if(j%2 ==0) {
+                    balls[i]->setColor(255, 0, 0);
+                } else {
+                    balls[i]->setColor(0, 255, 0);
+                }
+                
             }
         }
     }
-    
-//    if (y - diameter/2 > height) {
-//        y = height - diameter/2;
-//        vy *= friction;
-//    }
-//    if (y - diameter/2 < 0) {
-//        y = diameter/2;
-//        vy *= friction;
-//    }
+}
+
+void testApp::checkCollisionMeetHand(void) {
+    if(numHands < 2) {
+        return;
+    }
+    int i = 0;
+    int j = i+1;
+
+    float dx = myhands[j]->x - myhands[i]->x;
+    float dy = myhands[j]->y - myhands[i]->y;
+    float distance = ofDist(myhands[i]->x,myhands[i]->y,myhands[j]->x,myhands[j]->y);
+    float minDist = myhands[j]->diameter/2 + myhands[i]->diameter/2;
+            
+    if (distance < minDist) {
+        for(int k=0;k<balls.size();k++) {
+            balls[k]->setColor(0, 0, 0);
+        }
+    }
+
 }

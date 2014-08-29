@@ -22,6 +22,11 @@ public:
     
 	void move();
 	void display();
+    void setColor(int red, int green, int blue);
+    
+    int getRed();
+    int getGreen();
+    int getBlue();
     
 public:
 	float x;
@@ -36,6 +41,8 @@ public:
     
 	float width;
 	float height;
+    
+    int red, green, blue;
     
     bool status = true;
     

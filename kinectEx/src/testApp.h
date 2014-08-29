@@ -8,7 +8,7 @@
 #include <tr1/array>
 
 #define MAX_DEVICES 1
-#define MAX_NUMBER_OF_HAND 1
+#define MAX_NUMBER_OF_HAND 2
 
 class testApp : public ofBaseApp{
 
@@ -40,6 +40,9 @@ private:
     
     vector<Ball*> balls;
     
+    vector<Ball*> myhands;
+    int numHands;
+    
     int numBalls;
     float spring;
     float gravity;
@@ -48,13 +51,12 @@ private:
     float width;
     float height;
     
-    int barStartx = 0;
-    int barStarty = 0;
-    int barWidth = 100;
-    int barHeight = 20;
-    
     void checkCollision();
+    void checkCollisionWithHand(void);
     void checkCollisionWithBar();
+    void checkCollisionMeetHand(void);
+    int countRed();
+    int countGreen();
 
 };
 
